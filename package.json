@@ -1,0 +1,15 @@
+{
+  "name": "spotifylyricthing",
+  "version": "1.0.0",
+  "description": "Spotify lyric to arduino bridge",
+  "license": "MIT",
+  "author": "JacobC1921",
+  "type": "commonjs",
+  "main": "lyric2serial-server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
