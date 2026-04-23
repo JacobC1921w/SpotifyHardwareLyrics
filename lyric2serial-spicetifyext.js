@@ -68,7 +68,7 @@
                 sendRequest(artist, album, track, currentLyric, nextLyric, previousLyric, progress, trackLength);
             }
         }
-    }, 200);
+    }, 500);
 })();
 
 async function sendRequest(artist, album, track, currentLyric, nextLyric, previousLyric, progress, trackLength) {
