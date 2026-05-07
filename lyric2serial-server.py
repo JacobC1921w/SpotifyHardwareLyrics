@@ -27,7 +27,7 @@ class Overlay:
         self.root.wm_attributes("-disabled", True)
         self.root.wm_attributes("-toolwindow", True)
         self.root.config(bg="black")
-        self.root.attributes("-alpha", 0.75)
+        self.root.attributes("-alpha", 0.6)
 
         self.mainContainer = Frame(self.root, bg="black", padx=0, pady=0, highlightthickness=0)
         self.mainContainer.pack()

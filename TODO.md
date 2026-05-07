@@ -3,6 +3,7 @@
 2. Fix cutoff lyrics (happens with infinite baths - sleep token) (✔)
 3. Make more transparent or find a way to make it less obtrusive - for the python thingo (✖)
 4. Allow the python script to be quittable lol (? - maybe worked so far)
+5. Fix music note not appearing on previous or next lyric
 
 # Additions
 1. Decide whether to use serial or wireless (idk yet could do both)
