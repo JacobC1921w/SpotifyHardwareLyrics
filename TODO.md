@@ -9,3 +9,5 @@
 # Additions
 1. Decide whether to use serial or wireless (idk yet could do both)
 2. Add option to display text over current monitor - recode in python for tkinter (✔)
+3. Maybe send through song details before getting lyrics to it looks like it updates faster
+4. Make the progress bar look nicer
