@@ -21,7 +21,7 @@ class Overlay:
         # Window attributes. Basically we want the window to be on the top at all times and not show up in ALT+TAB menu to make it look nicer. Also setup transparency
         self.root = Tk()
         self.root.overrideredirect(True)
-        self.root.geometry("+10+10")
+        self.root.geometry("+0+0")
         self.root.lift()
         self.root.wm_attributes("-topmost", True)
         self.root.wm_attributes("-disabled", True)
