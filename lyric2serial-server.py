@@ -9,7 +9,6 @@ from tkinter import Tk, Label, Frame
 from PIL import Image, ImageTk
 from io import BytesIO
 from requests import get
-from time import sleep
 from ctypes import windll
 #endregion Imports
 
