@@ -139,6 +139,7 @@ def runServer() -> None:
 #endregion Functions
 
 if __name__ == "__main__":
+    print("Use CTRL+C to quit")
     # This is just a little "hack" so that we can run the pprogram without having to use the uvicorn command. Also seperate threads because multithreadin is sick in Python
     serverThread = Thread(target=runServer, daemon=True)
     serverThread.start()

@@ -39,6 +39,7 @@
         
         try {
             const res = await fetch(query);
+            // TODO - check if response is ok
             const json = await res.json();
             // Parse syncedLyrics into an array of {time, text} by iterating through each line
             let currentLyricsArray = json.syncedLyrics.split('\n');
@@ -52,7 +53,7 @@
 
                 currentLyrics.push([timestamp, lyric]);
             }
-        } catch (e) {
+        } catch {
             currentLyrics = [[0, "Couldn't find lyrics :p"]];
         }
     });
@@ -65,7 +66,7 @@
 
         // If we haven't encountered any lyrics yet, just send through some basic information first
         if (progress < currentLyrics[0][0]) {
-            sendRequest(artist, album, albumCover, track, "", "", currentLyrics[0][1], progress, trackLength);
+            sendRequest(artist, album, albumCover, track, '♪', '♪', currentLyrics[0][1], progress, trackLength);
         } else {
             // Find the next lyric (cool!)
             const currentIndex = currentLyrics.findLastIndex(item => item[0] <= progress);
@@ -74,12 +75,17 @@
             if (currentIndex !== -1) {
                 const match = currentLyrics[currentIndex];
                 // Replace null lyrics with a nice music symbol like spotify does
-                currentLyric = match[1] ? match[1] : '♪';
+                currentLyric = isEmptyOrWhiteSpace(match[1][0]) ? match[1] : '♪';
                 
-                previousLyric = currentLyrics[currentIndex - 1] ? currentLyrics[currentIndex - 1][1] : '♪';
-                nextLyric = currentLyrics[currentIndex + 1] ? currentLyrics[currentIndex + 1][1] : '♪';
+                // Fix for TypeError
+                try {
+                    previousLyric = isEmptyOrWhiteSpace(currentLyrics[currentIndex - 1][0]) ? currentLyrics[currentIndex - 1][1] : '♪';
+                } catch {
+                    // Must be starting lyric - Shouldnt this be resolved on line 64 though?
+                }
+                nextLyric = isEmptyOrWhiteSpace(currentLyrics[currentIndex + 1][0]) ? currentLyrics[currentIndex + 1][1] : '♪';
 
-                sendRequest(artist, album, albumCover, track, currentLyric, nextLyric, previousLyric, progress, trackLength);
+                sendRequest(artist, album, albumCover, track, currentLyric, previousLyric, nextLyric, progress, trackLength);
             }
         }
     }, 500); // Probably doesn't have to be run every 500ms, but having close-to real-time updating is cool
@@ -87,8 +93,12 @@
 //endregion Request section
 
 // Didn't want to type this twice so made it a function for ease :p
-async function sendRequest(artist, album, albumCover, track, currentLyric, nextLyric, previousLyric, progress, trackLength) {
+async function sendRequest(artist, album, albumCover, track, currentLyric, previousLyric, nextLyric, progress, trackLength) {
     await fetch(`http://127.0.0.1:5005/lyric?ar=${artist}&al=${album}&ac=${albumCover}&t=${track}&cl=${currentLyric}&pl=${previousLyric}&nl=${nextLyric}&p=${progress}&tl=${trackLength}`, {
         mode: "no-cors"
     }); // No-cors since we don't need a response
+}
+
+function isEmptyOrWhiteSpace(str) {
+    return !str || str.trim().length === 0;
 }
