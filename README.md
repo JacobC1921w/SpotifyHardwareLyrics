@@ -17,4 +17,6 @@ Next lyric
 
 Originally I was going to try to find a static pointer to do this without using Spicetify, however CEF is too hard and I CBF to make it work :p
 
-Currently platform independant (I think), and will hopefully stay so, but I know for a fact serial is gonna be funky...
+~~Currently platform independant (I think), and will hopefully stay so, but I know for a fact serial is gonna be funky...~~
+
+The python file is not platform independant due to the TKinter window attributes, which don't work on Linux (and maybe Mac?), however I can assure it works on Windows 10
