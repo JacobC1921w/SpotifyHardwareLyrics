@@ -1,41 +1,67 @@
+from threading import Thread
 from uvicorn import run
-from fastapi import FastAPI, HTTPException
-from subprocess import run as os
-from os import name as OSName
+from fastapi import FastAPI
+from tkinter import Tk, Label
 
-api: FastAPI = FastAPI()
+api = FastAPI()
+
+class Overlay:
+    def __init__(self):
+        self.root = Tk()
+        self.root.overrideredirect(True)
+        self.root.geometry("+10+10")
+        self.root.lift()
+        self.root.wm_attributes("-topmost", True)
+        self.root.wm_attributes("-disabled", True)
+        self.root.wm_attributes("-toolwindow", True)
+        self.root.config(bg="black")
+        self.root.attributes("-alpha", 0.75)
+
+        self.labels = {}
+        fields = ["artist", "album", "track", "progress", "previousLyric", "currrentLyric", "nextLyric"]
+        
+        for field in fields:
+            label = Label(self.root, text=f"{field}: ...", font=("Arial", 11, ("bold" if field == "currrentLyric" else "normal")), fg="white", bg="black", anchor='w', justify="left")
+            label.pack(anchor='w', fill='x', padx=10)
+            self.labels[field] = label
+
+    def updateUI(self, data: dict[str, str]) -> None:
+        self.labels["artist"].config(text=f"Artist: {data["ar"]}")
+        self.labels["album"].config(text=f"Album: {data["al"]}")
+        self.labels["track"].config(text=f"Track: {data['t']}")
+        self.labels["progress"].config(text=data["progressString"])
+        self.labels["previousLyric"].config(text=data["pl"])
+        self.labels["currrentLyric"].config(text=data["cl"])
+        self.labels["nextLyric"].config(text=data["nl"])
+
+overlay = None
 
 @api.get("/lyric")
-def parse_query(ar: str = None, al: str = None, t: str = None, cl: str = None, pl: str = None, nl: str = None, p: str = None, tl: str = None):
-    if None in (ar, al, t, cl, pl, nl, p, tl):
-        raise HTTPException(400, "Malformed data")
-    else:
-        if ar == "": return # Probably havent actually started a song yet
-        clearScreen()
-        print("Artist:\t" + ar)
-        print("Album:\t" + al)
-        print("Track:\t" + t)
-        print(generateProgress(int(tl), int(p)))
-        print("")
-        
-        print("\033[2m" + pl + "\x1b[0m")
-        print("\033[1m" + cl + "\x1b[0m")
-        print("\033[2m" + nl + "\x1b[0m")
-        return "OK"
-
-def formatTime(ms: int) -> str:
-    minutes = ms // 60000
-    seconds = (ms % 60000) // 1000
-
-    return f"{minutes}:{seconds:02d}"
+async def parseQuery(ar: str, al: str, t: str, cl: str, pl: str, nl: str, p: str, tl: str) -> dict[str, str]:
+    
+    progressString = generateProgress(int(tl), int(p))
+    
+    data = { "ar": ar, "al": al, 't': t, "progressString": progressString, "pl": pl, "cl": cl, "nl": nl }
+    
+    if overlay:
+        overlay.root.after(0, overlay.updateUI, data)
+    
+    return {"status": "OK"}
 
 def generateProgress(trackLength: int, progress: int) -> str:
-    progressBar = "".join(["○" if i == round(((progress / trackLength) * 100) / 10) else "―" for i in range(11)])
+    minutes_p, seconds_p = divmod(progress // 1000, 60)
+    minutes_t, seconds_t = divmod(trackLength // 1000, 60)
+    percent = (progress / trackLength) if trackLength > 0 else 0
+    dots = round(percent * 10)
+    bar = "".join(['○' if i == dots else '―' for i in range(11)])
+    return f"[{bar}] ({minutes_p}:{seconds_p:02d}/{minutes_t}:{seconds_t:02d})"
 
-    return f"[{progressBar}] ({formatTime(progress)}/{formatTime(trackLength)})"
-
-def clearScreen() -> None:
-    os("cls" if OSName == "nt" else "clear", shell=True)
+def runServer() -> None:
+    run(api, host="127.0.0.1", port=5005, log_level="critical")
 
 if __name__ == "__main__":
-    run("lyric2serial-server:api", host="127.0.0.1", port=5055, reload=False, log_level="Critical")
+    serverThread = Thread(target=runServer, daemon=True)
+    serverThread.start()
+
+    overlay = Overlay()
+    overlay.root.mainloop()
