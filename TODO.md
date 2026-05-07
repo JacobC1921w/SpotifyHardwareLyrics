@@ -1,6 +1,7 @@
 # Issues
-1. Fix lack of lyrics for smaller songs/bands (switch lyric api?)
-2. Fix cutoff lyrics (happens with infinite baths - sleep token)
+1. Fix lack of lyrics for smaller songs/bands (switch lyric api?) (✖)
+2. Fix cutoff lyrics (happens with infinite baths - sleep token) (✔)
 
 # Additions
 1. Decide whether to use serial or wireless
+2. Add option to display text over current monitor - recode in python for tkinter

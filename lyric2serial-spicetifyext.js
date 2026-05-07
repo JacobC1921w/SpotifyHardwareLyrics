@@ -40,7 +40,7 @@
                 const [minutes, seconds, ms] = timestamp.split(/[:.]/)
                 timestamp = (parseInt(minutes) * 60000) + (parseInt(seconds) * 1000) + (parseInt((ms || '0').padEnd(3, '0')))
 
-                lyric = lyric.substring((lyric.indexOf(']') + 2), lyric.length)
+                lyric = lyric.substring((lyric.indexOf(']') + 1), lyric.length).trim()
 
                 currentLyrics.push([timestamp, lyric])
             }
